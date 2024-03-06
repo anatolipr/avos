@@ -21,3 +21,17 @@ export function sliceToSubArrays<T>(array: T[], sliceSize: number): T[][] {
 export function randomNumber(number: number): number {
     return Math.floor(Math.random() * number)
 }
+
+/**
+ * debounce frequent calls until wait time s reached
+ * @param callback
+ * @param wait
+ */
+export const debounce = (callback: Function, wait = 300): ((...args: any[]) => void) => {
+    let timeout: ReturnType<typeof setTimeout>;
+
+    return (...args: any[]) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => callback(...args), wait);
+    };
+};
