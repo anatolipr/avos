@@ -35,3 +35,13 @@ export const debounce = (callback: Function, wait = 300): ((...args: any[]) => v
         timeout = setTimeout(() => callback(...args), wait);
     };
 };
+
+
+/**
+ * get an item for n-th index assuming that we loop through the items if n > items.length
+ * @param items - a list to pick from
+ * @param n - some index
+ */
+export function nthItem<T>(items: T[], n: number): T {
+    return items[ n % items.length ];
+}

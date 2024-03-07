@@ -1,4 +1,4 @@
-import {debounce, randomNumber, sliceToSubArrays} from "../src/util.js";
+import {debounce, nthItem, randomNumber, sliceToSubArrays} from "../src/util.js";
 
 import {expect, test} from "vitest";
 
@@ -33,4 +33,12 @@ test('debounnce', () => {
     }, 500)
 
 
+})
+
+test('nthItem', () => {
+    expect(nthItem(['one','two','three'], 0)).toBe('one')
+    expect(nthItem(['one','two','three'], 1)).toBe('two')
+    expect(nthItem(['one','two','three'], 2)).toBe('three')
+    expect(nthItem(['one','two','three'], 3)).toBe('one')
+    expect(nthItem(['one','two','three'], 4)).toBe('two')
 })
