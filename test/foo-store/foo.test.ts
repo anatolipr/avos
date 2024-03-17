@@ -117,6 +117,18 @@ test('test pause unpause', () => {
 
 })
 
+test('update', () => {
+
+    const foo: Foo<{
+        id: number, name: string
+    }> = new Foo({
+        id: -1,
+        name: 'john'
+    });
+
+    foo.update((val) => {val.id = 21; return val})
+    expect(foo.get().id).toBe(21)
+})
 
 test('console logging', () => {
     const foo: Foo<number> = new Foo(1);

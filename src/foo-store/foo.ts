@@ -33,7 +33,10 @@ export default class Foo<T> {
         if (!this.paused) {
             this.publish(<T>val, <T>oldVal);
         }
+    }
 
+    public update(fun: (val: T) => T): void {
+        this.set(fun(this.val))
     }
 
     /**
