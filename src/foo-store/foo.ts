@@ -6,7 +6,8 @@ export default class Foo<T> {
     private val?: T;
     private pausedVal?: T;
     private paused: boolean = false;
-    private listeners: ((value: T, oldValue: T) => void)[] = [];
+    private listeners:{[k: string]: ((value: T, oldValue: T) => void)} = {};
+    private idx: number = 0;
 
     /**
      * @constructor
@@ -123,12 +124,16 @@ export default class Foo<T> {
         immediate: boolean = true,
         log?: string
     ): () => void {
-        this.listeners = [...this.listeners, listener];
+        this.idx++;
+        const newIndex: string = this.idx.toString();
+        this.listeners[newIndex.toString()] = listener;
+
         if (immediate) {
             listener(<T>this.val, <T>undefined);
         }
         if (log)
             console.log('subscribing: %c' + log, 'color: yellow; background: black');
+
 
         return () => {
             if (log)
@@ -136,7 +141,8 @@ export default class Foo<T> {
                     'unsubscribing: %c' + log,
                     'color: yellow; background: black'
                 );
-            this.listeners.splice(this.listeners.length - 1, 1);
+
+            delete this.listeners[newIndex];
         };
     }
 
@@ -144,6 +150,13 @@ export default class Foo<T> {
      * publish new value to listeners
      */
     private publish(newValue: T, oldVal: T): void {
-        this.listeners.forEach((listener) => listener(newValue, oldVal));
+        Object.values(this.listeners)
+            .forEach((listener) => {
+                try {
+                    listener(newValue, oldVal)
+                } catch (e) {
+                    console.error('error calling listener', listener)
+                }
+            });
     }
 }

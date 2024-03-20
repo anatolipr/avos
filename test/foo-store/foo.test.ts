@@ -70,7 +70,6 @@ test('multi derived', () => {
     const foo: Foo<string> = new Foo('one');
 
     const derived: Foo<string> = Foo.derive([flag, foo], ([flagValue, fooValue]) => {
-        console.log(flagValue, fooValue)
         if (flagValue) {
             return fooValue + 'X'
         } else {
@@ -166,5 +165,44 @@ test('test unsubscribe', () => {
     foo.set(4)
     expect(calls).toBe(2);
     //...
+
+
+    // multiple subscribers;
+
+    const fooMulti: Foo<string> = new Foo('one');
+    let derived1 = '';
+    let derived2 = '';
+
+    let unsubscribe1 = fooMulti.subscribe((v) => derived1 = v)
+    let unsubscribe2 = fooMulti.subscribe((v) => derived2 = v)
+
+    expect(derived1).toBe('one')
+    expect(derived2).toBe('one')
+
+    unsubscribe1()
+
+    fooMulti.set('two')
+
+    expect(derived1).toBe('one')
+    expect(derived2).toBe('two')
+
+    unsubscribe1 = fooMulti.subscribe((v) => derived1 = v)
+    expect(derived1).toBe('two')
+    expect(derived2).toBe('two')
+
+    unsubscribe2()
+
+    fooMulti.set('three')
+
+    expect(derived1).toBe('three')
+    expect(derived2).toBe('two')
+
+    unsubscribe1()
+
+    fooMulti.set('four')
+
+    expect(derived1).toBe('three')
+    expect(derived2).toBe('two')
+
 
 })
