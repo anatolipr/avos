@@ -6,7 +6,7 @@ export default class Foo<T> {
     private val?: T;
     private pausedVal?: T;
     private paused: boolean = false;
-    private listeners:{[k: string]: ((value: T, oldValue: T) => void)} = {};
+    private listeners:{[k: string]: ((value: T, oldValue: T) => 'unsubscribe' | void)} = {};
     private idx: number = 0;
 
     /**
@@ -68,12 +68,16 @@ export default class Foo<T> {
 
     /**
      * derive a value based on few others
+     * @param stores list of stores to subscribe to
+     * @param fun function defining the logic of the derived value; takes also a second parameter - the store which it updates
+     * @param immediate should the result store value be populated immediately, or when a change to source stores occur
+     * @param logMessage log to print when source stores are unmounted
      */
     public static derive<M>(
         stores: Foo<any>[],
         fun: (values: any[], resultStore: Foo<M>) => M,
         immediate: boolean = true,
-        log?: string
+        logMessage?: string
     ): Foo<M> {
         const res: Foo<M> = new Foo();
 
@@ -84,7 +88,7 @@ export default class Foo<T> {
                     res.set(fun(values, res));
                 },
                 immediate,
-                log
+                logMessage
             );
         });
 
@@ -118,9 +122,13 @@ export default class Foo<T> {
 
     /**
      * subscribe to this store updates - ever time set() is called
+     * @param listener function to be called - takes parameters value, oldValue.
+     * unsubscribe is called if it returns 'unsubscribe'
+     * @param immediate should the listener function be called immediately
+     * @param log a string to be logged when unsubscribing
      */
     public subscribe(
-        listener: (value: T, oldValue: T) => void,
+        listener: (value: T, oldValue: T) => 'unsubscribe' | void,
         immediate: boolean = true,
         log?: string
     ): () => void {
@@ -129,7 +137,7 @@ export default class Foo<T> {
         this.listeners[newIndex.toString()] = listener;
 
         if (immediate) {
-            listener(<T>this.val, <T>undefined);
+            this.callListener([newIndex, listener], <T>this.val, <T>undefined)
         }
         if (log)
             console.log('subscribing: %c' + log, 'color: yellow; background: black');
@@ -142,21 +150,30 @@ export default class Foo<T> {
                     'color: yellow; background: black'
                 );
 
-            delete this.listeners[newIndex];
+            this.unsubscribe(newIndex);
         };
+    }
+
+    private unsubscribe(idx: string) {
+        delete this.listeners[idx];
     }
 
     /**
      * publish new value to listeners
      */
     private publish(newValue: T, oldVal: T): void {
-        Object.values(this.listeners)
-            .forEach((listener) => {
-                try {
-                    listener(newValue, oldVal)
-                } catch (e) {
-                    console.error('error calling listener', listener)
-                }
-            });
+        Object.entries(this.listeners)
+            .forEach(listener =>
+                this.callListener(listener, newValue, oldVal));
+    }
+
+    private callListener(listener: [string, (T, T) => void | 'unsubscribe'], newValue: T, oldVal: T){
+        try {
+            if (listener[1](newValue, oldVal) === 'unsubscribe') {
+                this.unsubscribe(listener[0])
+            }
+        } catch (e) {
+            console.error('error calling listener', listener[1], e)
+        }
     }
 }

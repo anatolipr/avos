@@ -206,3 +206,45 @@ test('test unsubscribe', () => {
 
 
 })
+
+
+test('test exception in listener', () => {
+    const foo: Foo<number> = new Foo(1);
+
+    const consoleMock = vi.spyOn(console, 'error')
+        .mockImplementation(() => undefined);
+
+    foo.subscribe(() => {
+        throw "foo error"
+    })
+
+    expect(consoleMock).toHaveBeenCalledOnce();
+})
+
+test('test unsubscribe from listener', () => {
+
+    const foo: Foo<number> = new Foo(1);
+    let derived: number = 0;
+
+
+    foo.subscribe((nv) => {
+        derived = nv;
+        if (nv > 2) return 'unsubscribe'
+    })
+
+    expect(derived).toBe(1);
+
+    foo.set(2)
+    expect(derived).toBe(2);
+
+    foo.set(3)
+    expect(derived).toBe(3);
+
+    foo.set(4)
+    expect(derived).toBe(3);
+
+    foo.set(40000)
+    expect(derived).toBe(3);
+
+
+})
