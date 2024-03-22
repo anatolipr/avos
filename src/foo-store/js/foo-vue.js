@@ -15,8 +15,9 @@ export function storeAsRef(store, logMessage) {
         state.value = [...value];
       } else if (typeof value === 'object') {
         state.value = { ...value };
+      } else {
+        state.value = value;
       }
-      state.value = value;
     },
     true,
     logMessage

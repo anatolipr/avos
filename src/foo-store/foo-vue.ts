@@ -19,8 +19,9 @@ export function storeAsRef<T>(
                 state.value = <T>[...value];
             } else if (typeof value === 'object') {
                 state.value = <T>{ ...value };
+            } else {
+                state.value = value;
             }
-            state.value = value;
         },
         true,
         logMessage
