@@ -30,6 +30,8 @@ test('single store derived', () => {
     expect(fooLen.get()).toBe(undefined);
     foo.set('123');
     expect(fooLen.get()).toBe(3);
+    foo.set('4444');
+    expect(fooLen.get()).toBe(4);
 });
 
 test('test subscribe', () => {
