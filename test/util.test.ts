@@ -1,4 +1,5 @@
-import {debounce, nthItem, randomNumber, sliceToSubArrays} from "../src/util.js";
+import {debounce, nthItem, randomNumber, sliceToSubArrays, 
+    getCurrentEpoch, crop} from "../src/util.js";
 
 import {expect, test} from "vitest";
 
@@ -42,3 +43,24 @@ test('nthItem', () => {
     expect(nthItem(['one','two','three'], 3)).toBe('one')
     expect(nthItem(['one','two','three'], 4)).toBe('two')
 })
+
+test('crop', () => {
+
+    expect(crop(''))
+    .toBe('')
+
+    expect(crop('abc'))
+    .toBe('abc')
+
+    expect(crop('abc ... 123\nfoo'))
+    .toBe('abc ...')
+
+    expect(crop('abc … 123\nfoo'))
+    .toBe('abc ...')
+    
+  });
+  
+  test('epo', () => {
+    expect(getCurrentEpoch())
+    .toBe(Math.floor(new Date().getTime() / 1000))
+  })

@@ -45,3 +45,36 @@ export const debounce = (callback: Function, wait = 300): ((...args: any[]) => v
 export function nthItem<T>(items: T[], n: number): T {
     return items[ n % items.length ];
 }
+
+/**
+ * get epoch seconds
+ * @returns current epoch seconds
+ */
+export function getCurrentEpoch(): number {
+    return Math.floor(new Date().getTime() / 1000);
+}
+
+export function crop(s: string) {
+    const matched = s?.match(/…|\.\.\./);
+    
+    if (matched) {
+      return s.split(matched[0])[0] + '...'
+    } else {
+      return s;
+    }
+}
+
+export async function copyToClipboard(input: string | null) {
+  if (!input) return;
+  
+  const type = "text/plain";
+  const blob = new Blob([input], { type });
+  const data = [new ClipboardItem({ [type]: blob })];
+  await navigator.clipboard.write(data);
+  
+  alert("Copied.");
+}
+
+export async function paste(): Promise<string> {
+  return navigator.clipboard.readText()
+}
