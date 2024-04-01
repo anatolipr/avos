@@ -1,6 +1,6 @@
 {
   "name": "avos",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "Stuff",
   "main": "index.js",
   "scripts": {

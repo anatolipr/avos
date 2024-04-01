@@ -56,7 +56,7 @@ export function getCurrentEpoch(): number {
 
 export function crop(s: string) {
     const matched = s?.match(/…|\.\.\./);
-    
+
     if (matched) {
       return s.split(matched[0])[0] + '...'
     } else {
@@ -66,15 +66,56 @@ export function crop(s: string) {
 
 export async function copyToClipboard(input: string | null) {
   if (!input) return;
-  
+
   const type = "text/plain";
   const blob = new Blob([input], { type });
   const data = [new ClipboardItem({ [type]: blob })];
   await navigator.clipboard.write(data);
-  
+
   alert("Copied.");
 }
 
 export async function paste(): Promise<string> {
   return navigator.clipboard.readText()
+}
+
+
+
+export function saveFile(content: string, suggestedFileName: string = 'untitled', contentType: string = 'application/json') {
+    const blob = new Blob([content], { type: contentType });
+
+    const a = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    a.href = url;
+    a.download = suggestedFileName;
+
+    document.body.appendChild(a);
+    a.click();
+
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}
+
+
+export async function readFile(): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const input = document.createElement('input');
+        input.type = 'file';
+
+        input.onchange = function() {
+            const fileReader = new FileReader();
+
+            fileReader.onload = function(event) {
+                resolve(event.target!.result as string);
+            };
+
+            fileReader.onerror = function(error) {
+                reject(error);
+            };
+
+            fileReader.readAsText((<HTMLInputElement>input).files![0]);
+        };
+
+        input.click();
+    });
 }
