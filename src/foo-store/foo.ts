@@ -48,7 +48,7 @@ export default class Foo<T> {
     }
 
     /**
-     * pause all subscribers from triggering when we you call set()
+     * pause all subscribers from triggering when you call set()
      */
     public pause() {
         this.paused = true;
@@ -57,7 +57,7 @@ export default class Foo<T> {
 
     /**
      * resume subscribers (including derived stores)
-     * @param immediate should the unpausing immediately trigger publish to all subscribers
+     * @param immediate should the un-pausing immediately trigger publish to all subscribers
      */
     public unpause(immediate: boolean = true) {
         this.paused = false;
@@ -121,7 +121,7 @@ export default class Foo<T> {
     }
 
     /**
-     * subscribe to this store updates - ever time set() is called
+     * subscribe to this store updates - every time set() is called
      * @param listener function to be called - takes parameters value, oldValue.
      * unsubscribe is called if it returns 'unsubscribe'
      * @param immediate should the listener function be called immediately
