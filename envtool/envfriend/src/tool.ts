@@ -30,19 +30,19 @@
 
   (window as any).__envfriend = functions;
 
-  functions.overrideCurrentEnvironment = function(override: string): void {
+  functions.overrideCurrentEnvironment = function(envName: string, override: string): void {
     
     const date = !!override
       ? 'Fri, 31 Dec 9999 23:59:59 GMT'
       : 'Thu, 01 Jan 1970 00:00:01 GMT';
-    document.cookie = `_imenvt_=${override}; expires=${date}; path=/`;
+    document.cookie = `_imenvt_${envName}=${override}; expires=${date}; path=/`;
 
     console.log('Overrde applied', override)
   }
 
-  functions.getCurrentEnvironmentString = function(): string {
+  functions.getCurrentEnvironmentString = function(envName: string): string {
     let override = document.cookie.match(
-      new RegExp('(^| )_imenvt_=([^;]+)')
+      new RegExp(`(^| )_imenvt_${envName}=([^;]+)`)
     )?.[2];
     return override || (window as any)._imenvt_ || 'production';
   }
@@ -71,9 +71,9 @@
     });
   }
   
-  functions.getEnvironmentUrl = async function (template: string, configUrl: string): Promise<string> {
+  functions.getEnvironmentUrl = async function (template: string, configUrl: string, envName: string): Promise<string> {
 
-    const env = functions.getCurrentEnvironmentString();
+    const env = functions.getCurrentEnvironmentString(envName);
 
     if (env.match(/^https?:/i)) {
       return env + '/' + functions.getFilenameFromURL(template);

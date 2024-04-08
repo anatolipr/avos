@@ -20,19 +20,19 @@ function createFetchResponse(data: {}) {
 test('getCurrentEnvironmentString overrideCurrentEnvironment', () => {
 
     expect(window._imenvt_).toBeUndefined();
-    expect( window.__envfriend.getCurrentEnvironmentString() ).toBe('production');
+    expect( window.__envfriend.getCurrentEnvironmentString('sales') ).toBe('production');
 
     window._imenvt_ = 'stage23';
-    expect( window.__envfriend.getCurrentEnvironmentString() ).toBe('stage23');
+    expect( window.__envfriend.getCurrentEnvironmentString('sales') ).toBe('stage23');
 
     expect(window._imenvt_).toBe('stage23');
 
-    window.__envfriend.overrideCurrentEnvironment('foo');
+    window.__envfriend.overrideCurrentEnvironment('sales','foo');
     expect(window._imenvt_).toBe('stage23');
-    expect( window.__envfriend.getCurrentEnvironmentString() ).toBe('foo');
+    expect( window.__envfriend.getCurrentEnvironmentString('sales') ).toBe('foo');
 
-    window.__envfriend.overrideCurrentEnvironment();
-    expect( window.__envfriend.getCurrentEnvironmentString() ).toBe('stage23');
+    window.__envfriend.overrideCurrentEnvironment('sales');
+    expect( window.__envfriend.getCurrentEnvironmentString('sales') ).toBe('stage23');
     
 });
 
@@ -44,6 +44,7 @@ test('getFilenameFromURL', () => {
 
 
 const mockConfig: {} = {
+    "name": "sales",
     "configuration": {
         "environments": [
         {
