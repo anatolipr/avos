@@ -71,28 +71,29 @@
     });
   }
   
-  functions.getEnvironmentUrl = async function (template: string, configUrl: string, envName: string): Promise<string> {
+  functions.getEnvironmentUrl = async function (template: string, projectName: string): Promise<string> {
 
-    const env = functions.getCurrentEnvironmentString(envName);
+    const env = functions.getCurrentEnvironmentString(projectName);
 
     if (env.match(/^https?:/i)) {
       return env + '/' + functions.getFilenameFromURL(template);
     }
 
-
+    let configUrl = `https://ui.impact.com/${projectName}/environments.json`;
+    
     //cache
-    if (configCache[configUrl] === undefined) {
+    if (configCache[projectName] === undefined) {
       const conf: EnvironmentsFile = await fetch(configUrl).then(r => r.json());
-      configCache[configUrl] = conf?.configuration?.environments
+      configCache[projectName] = conf?.configuration?.environments
         .reduce((acc: EnvironmentMap, v: Environment) => {
           acc[v.id] = v;
           return acc;
         }, {}) || {};
     }
 
-    const currentConfig = configCache[configUrl];
+    const currentConfig = configCache[projectName];
 
-    if (configCache[configUrl][env] !== undefined) {
+    if (currentConfig[env] !== undefined) {
       return template.replaceAll('{env}', currentConfig[env].bucketPath || currentConfig[env].id)
     } else {
       return template.replaceAll('{env}',

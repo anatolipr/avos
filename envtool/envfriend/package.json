@@ -11,8 +11,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "build:tool": "tsc src/tool.ts --outfile dist/tool.js",
+    "build:vite": "tsc && vite build",
+    "build": "tsc src/tool.ts --outfile dist/tool.js",
     "preview": "vite preview",
     "test": "vitest --run --dom"
   },
