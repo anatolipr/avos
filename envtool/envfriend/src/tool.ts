@@ -2,8 +2,6 @@
 ((window: any) => {
 
   const functions: any = {};
-  let environmentsPath = './environments.json';
-  functions.environmentsPath = environmentsPath;
 
   type Environment = {
     id: string,
@@ -27,7 +25,8 @@
     attrs: attrsArray
   }
 
-  let currentConfig: EnvironmentMap | undefined = undefined;
+  let configCache: {[k:string]: EnvironmentMap} = {};
+  functions.configCache = configCache;
 
   (window as any).__envfriend = functions;
 
@@ -72,7 +71,7 @@
     });
   }
   
-  functions.getEnvironmentUrl = async function (template: string): Promise<string> {
+  functions.getEnvironmentUrl = async function (template: string, configUrl: string): Promise<string> {
 
     const env = functions.getCurrentEnvironmentString();
 
@@ -80,17 +79,20 @@
       return env + '/' + functions.getFilenameFromURL(template);
     }
 
+
     //cache
-    if (currentConfig === undefined) {
-      const conf: EnvironmentsFile = await fetch(environmentsPath).then(r => r.json());
-      currentConfig = conf?.configuration?.environments
+    if (configCache[configUrl] === undefined) {
+      const conf: EnvironmentsFile = await fetch(configUrl).then(r => r.json());
+      configCache[configUrl] = conf?.configuration?.environments
         .reduce((acc: EnvironmentMap, v: Environment) => {
           acc[v.id] = v;
           return acc;
         }, {}) || {};
     }
 
-    if (currentConfig[env] !== undefined) {
+    const currentConfig = configCache[configUrl];
+
+    if (configCache[configUrl][env] !== undefined) {
       return template.replaceAll('{env}', currentConfig[env].bucketPath || currentConfig[env].id)
     } else {
       return template.replaceAll('{env}',

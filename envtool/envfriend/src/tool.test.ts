@@ -73,17 +73,17 @@ test('', async () => {
 
     (fetch as any).mockResolvedValue(createFetchResponse(mockConfig))
     
-    let replaced = await window.__envfriend.getEnvironmentUrl('https://example.com/{env}/index.html')
+    let replaced = await window.__envfriend.getEnvironmentUrl('https://example.com/{env}/index.html', './env.js')
     expect(replaced).toBe('https://example.com/pd1/index.html')
 
-    expect(fetch).toHaveBeenLastCalledWith(window.__envfriend.environmentsPath);
+    expect(fetch).toHaveBeenLastCalledWith('./env.js');
     
 
     //test value not in config
     window._imenvt_ = 'unknownn';
 
 
-    let replaced2 = await window.__envfriend.getEnvironmentUrl('https://example.com/{env}/index.html')
+    let replaced2 = await window.__envfriend.getEnvironmentUrl('https://example.com/{env}/index.html', './env.js')
     //first fetch will be cached
     expect(fetch).toBeCalledTimes(1);
     
@@ -92,7 +92,7 @@ test('', async () => {
     //test id
 
     window._imenvt_ = 'stage27';
-    let replaced3 = await window.__envfriend.getEnvironmentUrl('https://example.com/{env}/index.html')
+    let replaced3 = await window.__envfriend.getEnvironmentUrl('https://example.com/{env}/index.html', './env.js')
     expect(replaced3).toBe('https://example.com/stage27/index.html')
 
 
