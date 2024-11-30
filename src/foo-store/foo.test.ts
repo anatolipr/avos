@@ -1,5 +1,5 @@
 import { test, expect, vi, afterAll } from 'vitest';
-import Foo from '../../src/foo-store/foo';
+import Foo from './foo';
 
 global.window = <any>{};
 
@@ -231,7 +231,7 @@ test('test unsubscribe from listener', () => {
 
     foo.subscribe((nv) => {
         derived = nv;
-        if (nv > 2) return 'unsubscribe'
+        if (nv > 2) return Foo.UNSUBSCRIBE
     })
 
     expect(derived).toBe(1);

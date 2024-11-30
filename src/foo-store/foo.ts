@@ -1,12 +1,21 @@
+type SubscriberReturnType = any | 'unsubscribe';
+
 /**
  * Foo store
  */
 export default class Foo<T> {
 
+    public static UNSUBSCRIBE = 'unsubscribe';
+
+    /** @private */
     private val?: T;
+    /** @private */
     private pausedVal?: T;
+    /** @private */
     private paused: boolean = false;
-    private listeners:{[k: string]: ((value: T, oldValue: T) => 'unsubscribe' | void)} = {};
+    /** @private */
+    private listeners:{[k: string]: ((value: T, oldValue: T) => SubscriberReturnType)} = {};
+    /** @private */
     private idx: number = 0;
 
     /**
@@ -16,7 +25,7 @@ export default class Foo<T> {
      */
     constructor(val?: T, id?: string) {
         this.val = val;
-        let win: { [k: string]: any } | undefined = window || global;
+        let win: { [k: string]: any } | undefined = window || globalThis;
         if (id && win) {
             const storesWindowKey: any = '_Foo_stores_';
             window[storesWindowKey] = win[storesWindowKey] || {};
@@ -37,7 +46,7 @@ export default class Foo<T> {
     }
 
     public update(fun: (val: T) => T): void {
-        this.set(fun(this.val))
+        this.set(fun(this.val as T))
     }
 
     /**
@@ -123,12 +132,12 @@ export default class Foo<T> {
     /**
      * subscribe to this store updates - every time set() is called
      * @param listener function to be called - takes parameters value, oldValue.
-     * unsubscribe is called if it returns 'unsubscribe'
+     * unsubscribe() is called if it returns Foo.UNSUBSCRIBE
      * @param immediate should the listener function be called immediately
      * @param log a string to be logged when unsubscribing
      */
     public subscribe(
-        listener: (value: T, oldValue: T) => 'unsubscribe' | void,
+        listener: (value: T, oldValue: T) => SubscriberReturnType,
         immediate: boolean = true,
         log?: string
     ): () => void {
@@ -154,12 +163,14 @@ export default class Foo<T> {
         };
     }
 
+    /** @private */
     private unsubscribe(idx: string) {
         delete this.listeners[idx];
     }
 
     /**
      * publish new value to listeners
+     * @private
      */
     private publish(newValue: T, oldVal: T): void {
         Object.entries(this.listeners)
@@ -167,9 +178,10 @@ export default class Foo<T> {
                 this.callListener(listener, newValue, oldVal));
     }
 
-    private callListener(listener: [string, (T, T) => void | 'unsubscribe'], newValue: T, oldVal: T){
+    /** @private */
+    private callListener(listener: [string, (oldVal: T, newVal : T) => SubscriberReturnType], newValue: T, oldVal: T) {
         try {
-            if (listener[1](newValue, oldVal) === 'unsubscribe') {
+            if (listener[1](newValue, oldVal) === Foo.UNSUBSCRIBE) {
                 this.unsubscribe(listener[0])
             }
         } catch (e) {

@@ -1,5 +1,5 @@
 import {debounce, nthItem, randomNumber, sliceToSubArrays, 
-    getCurrentEpoch, crop} from "../src/util.js";
+    getCurrentEpoch, crop} from "./util.js";
 
 import {expect, test} from "vitest";
 

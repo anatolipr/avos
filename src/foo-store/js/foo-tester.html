@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Foo Tester</title>
+    <script type="module">
+
+      import Foo from "./foo.js";
+      const foo = new Foo(0);
+
+      const unsubscribe = foo.subscribe(() => {
+        showResult();
+      });
+      
+      function showResult() {
+        document.getElementById("result").innerText = foo.get();
+      }
+
+      globalThis.increment = () => {
+        if (foo.get() >= 3) {
+          unsubscribe();
+          return;
+        }
+        foo.update(($foo) => $foo + 1);
+      };
+
+    </script>
+  </head>
+
+  <body>
+    <h1>Tester</h1>
+    <p>Foo is
+        <span id="result"></span>
+    </p>
+    <button type="button" onclick="increment()">Increment (max 3)</button>
+  </body>
+</html>

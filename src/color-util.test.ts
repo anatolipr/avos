@@ -1,5 +1,5 @@
 import {test, expect} from "vitest";
-import {getContrastColor} from "../src/color-util";
+import {getContrastColor} from "./color-util";
 
 test('getContrastColor', () => {
     expect(getContrastColor('#000000')).toBe('white')

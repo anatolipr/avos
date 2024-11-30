@@ -1,0 +1,6 @@
+tsc foo.ts --target ESNext \
+ --module ESNext \
+ --skipLibCheck \
+ --removeComments false \
+ --declaration --emitDecoratorMetadata --experimentalDecorators \
+ --outDir ./js
