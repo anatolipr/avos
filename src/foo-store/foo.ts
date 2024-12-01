@@ -45,6 +45,16 @@ export default class Foo<T> {
         }
     }
 
+    /** @private 
+     * from Svelte's equality.js
+    */
+    private safeNotEquals(a: any, b: any): boolean {
+        return a != a ? b == b
+            : a !== b 
+            || (a !== null && typeof a === 'object') 
+            || typeof a === 'function';
+    }
+
     public update(fun: (val: T) => T): void {
         this.set(fun(this.val as T))
     }
@@ -173,9 +183,11 @@ export default class Foo<T> {
      * @private
      */
     private publish(newValue: T, oldVal: T): void {
-        Object.entries(this.listeners)
-            .forEach(listener =>
-                this.callListener(listener, newValue, oldVal));
+        if (this.safeNotEquals(newValue, oldVal)) {
+            Object.entries(this.listeners)
+                .forEach(listener =>
+                    this.callListener(listener, newValue, oldVal));
+        }
     }
 
     /** @private */

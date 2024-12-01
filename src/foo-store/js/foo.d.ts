@@ -25,6 +25,10 @@ export default class Foo<T> {
      * @param val value to save in the store
      */
     set(val: T): void;
+    /** @private
+     * from Svelte's equality.js
+    */
+    private safeNotEquals;
     update(fun: (val: T) => T): void;
     /**
      * get store value
