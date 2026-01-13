@@ -6,7 +6,8 @@
   "scripts": {
     "test": "vitest --run",
     "test:ui": "vitest --ui",
-    "test:verbose": "vitest --reporter=verbose"
+    "test:verbose": "vitest --reporter=verbose",
+    "buildsignals": "npx tsc --project src/avosignals/tsconfig.json"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +18,7 @@
     "vitest": "^1.4.0",
     "@vitest/coverage-v8": "^1.4.0",
     "svelte": "^4.2.12",
-    "vue": "^3.4.21"
+    "vue": "^3.4.21",
+    "lit": "3.3.2"
   }
 }
