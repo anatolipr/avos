@@ -82,11 +82,33 @@ dispose();
 // Logs: 'Cleaning up...'
 ```
 
+4. Manual Subscription
+
+If you need to listen to changes without creating an automatic effect (for example, to integrate with a legacy API or one-off logic), you can subscribe directly to any `Signal` or `Computed`.
+
+*Note: Unlike `effect`, manual subscriptions do not track dependencies automatically; they only fire when the specific signal you subscribed to changes.*
+
+```Typescript
+import { Signal } from 'avosignals';
+
+const theme = new Signal('light');
+
+// Returns an unsubscribe function
+const unsubscribe = theme.subscribe(() => {
+    console.log(`Theme changed to: ${theme.get()}`);
+});
+
+theme.set('dark'); // Logs: "Theme changed to: dark"
+
+// Stop listening
+unsubscribe();
+```
+
 # Usage with Lit
 
 `avosignals` was built with Lit in mind. The `SignalWatcher` class hooks into the Lit lifecycle to automatically track signals accessed during render. Its core design is to allow for production ready signals which can be easily replaced with Lit's official signals once **TC39 signals** becomes mainstream and production ready.
 
-# The `SignalWatcher` Controller
+## The `SignalWatcher` Controller
 
 You do not need to manually subscribe to signals. simply add the controller, and any signal read inside `render()` will trigger a component update when it changes.
 
@@ -114,6 +136,49 @@ export class MyCounter extends LitElement {
         `;
     }
 }
+```
+
+# Usage with Vanilla Web Components
+
+You can easily use `avosignals` with standard HTML Web Components. Since vanilla components don't have a built-in reactive render cycle, the best pattern is to use an `effect` inside `connectedCallback` to update the DOM, and clean it up in `disconnectedCallback`.
+
+```TypeScript
+import { Signal, effect } from 'avosignals';
+
+const count = new Signal(0);
+
+class VanillaCounter extends HTMLElement {
+    private dispose?: () => void;
+    private label = document.createElement('span');
+    private button = document.createElement('button');
+
+    constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        
+        this.button.textContent = 'Increment';
+        this.button.onclick = () => count.update(c => c + 1);
+        
+        // Initial layout
+        this.shadowRoot?.append(this.label, this.button);
+    }
+
+    connectedCallback() {
+        // Use 'effect' to bind the signal state to the DOM text.
+        // This runs immediately and whenever 'count' changes.
+        this.dispose = effect(() => {
+            this.label.textContent = `Current count: ${count.get()} `;
+        });
+    }
+
+    disconnectedCallback() {
+        // ⚠️ Important: Always clean up effects when the element 
+        // is removed from the DOM to prevent memory leaks.
+        if (this.dispose) this.dispose();
+    }
+}
+
+customElements.define('vanilla-counter', VanillaCounter);
 ```
 
 # Advanced Architecture
