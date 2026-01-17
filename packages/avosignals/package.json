@@ -1,0 +1,36 @@
+{
+  "name": "avosignals",
+  "version": "1.0.0",
+  "description": "A lightweight signaling library for web components and modern web applications with Lit integration.",
+  "keywords": [
+    "signals",
+    "events",
+    "typescript",
+    "observer",
+    "reactive"
+  ],
+  "main": "dist/avosignals.js",
+  "types": "dist/avosignals.d.ts",
+  "files": [
+    "dist", "LICENSE"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "prepublishOnly": "npm run build"
+  },
+  "author": "Anatoli Radulov",
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vitest": "^1.4.0",
+    "@vitest/coverage-v8": "^1.4.0",
+    "lit": "3.3.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anatolipr/avos.git"
+  },
+  "bugs": {
+    "url": "https://github.com/anatolipr/avos/issues"
+  },
+  "license": "MIT"
+}
