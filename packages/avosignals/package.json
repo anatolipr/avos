@@ -1,6 +1,6 @@
 {
   "name": "avosignals",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A lightweight signaling library for web components and modern web applications with Lit integration.",
   "keywords": [
     "signals",
@@ -34,5 +34,6 @@
   "bugs": {
     "url": "https://github.com/anatolipr/avos/issues"
   },
+  "homepage": "https://github.com/anatolipr/avos/tree/main/packages/avosignals#readme",
   "license": "MIT"
 }
