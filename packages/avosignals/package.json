@@ -9,6 +9,7 @@
     "observer",
     "reactive"
   ],
+  "type": "module",
   "main": "dist/avosignals.js",
   "types": "dist/avosignals.d.ts",
   "files": [

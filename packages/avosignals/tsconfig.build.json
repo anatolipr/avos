@@ -5,8 +5,11 @@
     "declaration": true,  // Generates the .d.ts files
     "outDir": "./dist",   // Where the build goes
     "rootDir": "./",   // Where your source is
-    "strict": true
+    "strict": true,
+    "moduleResolution": "bundler", 
+    "skipLibCheck": true
   },
+
   "include": ["./**/*"],
   "exclude": ["node_modules", "**/*.test.ts"]
 }

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVO Signals Tester</title>
+</head>
+<body>
+    <script type="module">
+        import { Signal, SignalWatcher } from './dist/avosignals.js';
+        import { LitElement, html, css } from 'https://esm.sh/lit@3.3.2';
+
+        customElements.define('signal-tester', class extends LitElement {
+            watcher = new SignalWatcher(this);
+            
+            static styles = css`
+                button {
+                    font-size: 16px;
+                    padding: 10px 20px;
+                    margin: 5px;
+                }
+            `;
+
+            constructor() {
+                super();
+                this.clickSignal = new Signal(0);
+            }
+
+            incrementClickCount() {
+                this.clickSignal.set(this.clickSignal.get() + 1);
+            }
+
+            render() {
+                return html`
+                    <div>
+                        <button @click="${() => this.incrementClickCount()}">Click Me</button>
+                        <p>Button clicked: ${this.clickSignal.get()} times</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+    <signal-tester></signal-tester>
+    
+</body>
+</html>
