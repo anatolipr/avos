@@ -7,7 +7,7 @@ import { singalToJSON } from "./avosignals-util";
 export class SignalWatch extends LitElement {
     watcher = new SignalWatcher(this);
 
-    @property() accessor signals: Signal<unknown>[] = [];
+    @property({ attribute: false }) accessor signals: Signal<unknown>[] = [];
     _subscribers: (() => void)[] = [];
 
     render() {
@@ -25,4 +25,10 @@ export class SignalWatch extends LitElement {
         `
     }
 
+}
+
+declare global {
+    interface HTMLElementTagNameMap {
+        "signal-watch": SignalWatch;
+    }
 }
