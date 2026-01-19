@@ -3,6 +3,8 @@
     "module": "esnext", // or "esnext" if strictly for modern bundlers
     "target": "esnext",
     "declaration": true,  // Generates the .d.ts files
+    "declarationMap": true, // Generates the .d.ts.map files
+    "sourceMap": true,  // Generates the .js.map files
     "outDir": "./dist",   // Where the build goes
     "rootDir": "./",   // Where your source is
     "strict": true,

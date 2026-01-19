@@ -1,6 +1,6 @@
 {
   "name": "avosignals",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A lightweight signaling library for web components and modern web applications with Lit integration.",
   "keywords": [
     "signals",
@@ -13,7 +13,7 @@
   "main": "dist/avosignals.js",
   "types": "dist/avosignals.d.ts",
   "files": [
-    "dist", "LICENSE"
+    "dist", "src", "LICENSE"
   ],
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.build.json",
