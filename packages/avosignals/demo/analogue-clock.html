@@ -27,7 +27,7 @@
     }
 
     const centerX = 50;
-    const centerY = 50;    
+    const centerY = 50;
     const roman = { 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI", 7: "VII", 8: "VIII", 9: "IX", 10: "X", 11: "XI", 12: "XII" }
 
     const fives = [...new Array(60 / 5)]
@@ -36,6 +36,9 @@
             value: roman[(i === 0 ? 12 : i)], 
             coord: getCoordinatesOnCircle(40, getDegreeMinutesSeconds(minute), centerX, centerY)
         }));
+    const tens = [... new Array(60)]
+        .map((el, i) => i)
+        .map( (minute, i) => getCoordinatesOnCircle(34, getDegreeMinutesSeconds(minute), centerX, centerY));
 
     //clock signals
     const dateSignal = new Signal();
@@ -77,6 +80,11 @@
             return html`
                 <svg viewbox="0 0 100 100">
 
+                    ${tens.map(
+                        dot => svg`
+                            <circle cx="${dot.x}" cy="${dot.y}" r="1" fill="gray"/>
+                        `
+                    )}
                     ${fives.map(
                         dot => svg`
                             <text x="${dot.coord.x}" y="${dot.coord.y +2}" style="font-family: serif; font-size: 6; fill: #bfbfbfff;"  text-anchor="middle">
@@ -84,6 +92,7 @@
                             </text>
                         `
                     )}
+                    
 
                     <text x="${centerX}" y="${centerY - 11}" style="font-family: Brush Script MT; font-size: 10; fill: #6c6c6cff;" text-anchor="middle">
                     avosignals
