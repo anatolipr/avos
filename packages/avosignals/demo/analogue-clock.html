@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html style="color-scheme: light dark">
+
+<body>
+
+<script type="module">
+    import { LitElement, html, svg } from 'https://cdn.jsdelivr.net/npm/lit@3.3.2/+esm';
+    import { Signal, Computed, SignalWatcher } from 'https://cdn.jsdelivr.net/npm/avosignals@1.0.3/dist/avosignals.min.js';
+
+    function getCoordinatesOnCircle(radius, degrees, centerX = 0, centerY = 0) {
+        
+        const angleInRadians = (degrees - 90) * (Math.PI / 180);
+        const x = centerX + (radius * Math.cos(angleInRadians));
+        const y = centerY + (radius * Math.sin(angleInRadians));
+
+        return { x: x, y: y };
+    }
+
+    function getDegreeMinutesSeconds(minutes, seconds = 0) {
+        const fractionalMinute = minutes + (seconds / 60);
+        return 360 * (fractionalMinute / 60)
+    }
+    
+    function getDegreeHours(hours, minutes) {
+        const fractionalHour = (hours % 12) + (minutes / 60);
+        return (fractionalHour / 12) * 360;
+    }
+
+    const centerX = 50;
+    const centerY = 50;    
+    const roman = { 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI", 7: "VII", 8: "VIII", 9: "IX", 10: "X", 11: "XI", 12: "XII" }
+
+    const fives = [...new Array(60 / 5)]
+        .map((el, i) => (i*5))
+        .map((minute, i) => ({
+            value: roman[(i === 0 ? 12 : i)], 
+            coord: getCoordinatesOnCircle(40, getDegreeMinutesSeconds(minute), centerX, centerY)
+        }));
+
+    //clock signals
+    const dateSignal = new Signal();
+
+    const clockArrows = new Computed(() => {
+        const date = dateSignal.get();
+        const seconds = getCoordinatesOnCircle(40, getDegreeMinutesSeconds(date.getSeconds()), centerX, centerY);
+        const minutes = getCoordinatesOnCircle(35, getDegreeMinutesSeconds(date.getMinutes(), date.getSeconds()), centerX, centerY);
+        const hours = getCoordinatesOnCircle(30, getDegreeHours(date.getHours(), date.getMinutes()), centerX, centerY);
+        return {
+            seconds, minutes, hours
+        }
+    });
+    
+    const clockDisplay = new Computed(() => {
+        const now = dateSignal.get();
+        const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+        const timeHM = now.toLocaleTimeString(undefined, timeOptions); 
+        return timeHM;
+    });
+
+    const dayDisplay = new Computed(() => {
+        return new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric' }).format(dateSignal.get());
+    });
+    
+    const setCurrentDate = () => dateSignal.set(new Date());
+    setCurrentDate();
+    setInterval(setCurrentDate, 1000);
+
+    //UI
+
+    customElements.define('signal-clock', class extends LitElement {
+        watcher = new SignalWatcher(this);
+        
+        render() {
+            const date = clockArrows.get();
+            
+            
+            return html`
+                <svg viewbox="0 0 100 100">
+
+                    ${fives.map(
+                        dot => svg`
+                            <text x="${dot.coord.x}" y="${dot.coord.y +2}" style="font-family: serif; font-size: 6; fill: #bfbfbfff;"  text-anchor="middle">
+                            ${dot.value}
+                            </text>
+                        `
+                    )}
+
+                    <text x="${centerX}" y="${centerY - 11}" style="font-family: Brush Script MT; font-size: 10; fill: #6c6c6cff;" text-anchor="middle">
+                    avosignals
+                    </text>
+
+                    <text x="${centerX}" y="${centerY - 20}" style="font-family: Arial; font-size: 3.5; fill: #ffffffff;" text-anchor="middle">
+                    ${dayDisplay.get()}
+                    </text>
+
+                    <text x="${centerX}" y="${centerY + 20}" style="font-family: Arial; font-size: 4; fill: #ffffffff;" text-anchor="middle">
+                    ${clockDisplay.get()}
+                    </text>
+
+                    <line x1="${centerX}" y1="${centerY}" x2="${date.hours.x}" y2="${date.hours.y}" stroke-linecap="round" stroke="white" stroke-width="3"></line>
+                    <line x1="${centerX}" y1="${centerY}" x2="${date.minutes.x}" y2="${date.minutes.y}" stroke-linecap="round" stroke="white" stroke-width="2"></line>
+                    <line x1="${centerX}" y1="${centerY}" x2="${date.seconds.x}" y2="${date.seconds.y}" stroke-linecap="round" stroke="crimson" stroke-width="1"></line>
+                    <circle cx="${centerX}" cy="${centerY}" r="3" fill="crimson"></circle>
+
+                </svg>
+            `
+        }
+    })
+</script>
+
+<signal-clock></signal-clock>
+
+</body>
+
+</html>
