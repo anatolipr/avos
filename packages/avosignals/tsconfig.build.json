@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "esnext", // or "esnext" if strictly for modern bundlers
-    "target": "esnext",
+    "target": "es2024", 
     "declaration": true,  // Generates the .d.ts files
     "declarationMap": true, // Generates the .d.ts.map files
     "sourceMap": true,  // Generates the .js.map files
