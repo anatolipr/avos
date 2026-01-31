@@ -28,7 +28,7 @@ npm install avosignals
 ```
 
 # Core Concepts
-1. Signals
+## 1. Signals
 
 Signals are the atoms of state. They hold a value and notify subscribers when that value changes.
 
@@ -43,7 +43,7 @@ count.set(1);
 count.update(c => c + 1); // 2
 ```
 
-2. Computed
+## 2. Computed
 
 Computed values are derived signals. They depend on other signals and re-evaluate only when their dependencies change. They are lazy—they only recalculate when read.
 
@@ -59,7 +59,7 @@ count.set(10);
 console.log(double.get()); // 20
 ```
 
-3. Effects
+## 3. Effects
 
 Effects are side effects that run automatically whenever the signals they access change. Useful for logging, manual DOM manipulation, or syncing with external APIs.
 
@@ -82,7 +82,7 @@ dispose();
 // Logs: 'Cleaning up...'
 ```
 
-4. Manual Subscription
+## 4. Manual Subscription
 
 If you need to listen to changes without creating an automatic effect (for example, to integrate with a legacy API or one-off logic), you can subscribe directly to any `Signal` or `Computed`.
 
@@ -210,6 +210,10 @@ To ensure unidirectional data flow, `avosignals` forbids writing to a `Signal` w
 
 `effect`
 - `effect(fn: () => void | cleanupFn)`: Runs immediately and tracks dependencies. Returns a dispose function.
+
+# Demos
+
+[See demos here](https://codesandbox.io/p/sandbox/avosignals-ttf23c)
 
 # License
 MIT
