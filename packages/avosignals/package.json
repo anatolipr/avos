@@ -1,6 +1,6 @@
 {
   "name": "avosignals",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "A lightweight signaling library for web components and modern web applications with Lit integration.",
   "keywords": [
     "signals",
@@ -17,6 +17,7 @@
   ],
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "test": "vitest",
     "prepublishOnly": "npm run build"
   },
   "author": "Anatoli Radulov",

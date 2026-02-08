@@ -9,6 +9,19 @@ test('Signal basic set / and get', () => {
     expect(signal.get()).toBe(1);
 });
 
+test('Signal basic set / and get using value', () => {
+    const signal = new Signal(0);
+    let derived = signal.value;
+    signal.subscribe(() => {
+        derived = signal.value;
+    });
+    expect(derived).toBe(0);
+
+    signal.value = 1;
+    expect(derived).toBe(1);
+});
+
+
 test('Signal basic subscribe with immediate effect', () => {
     const signal = new Signal(0);
     let derived = signal.get();

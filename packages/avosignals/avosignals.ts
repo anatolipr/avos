@@ -142,6 +142,14 @@ export class Signal<T> extends Observable<T> {
         this._set(value);
     }
 
+    get value(): T {
+        return this.get();
+    }
+
+    set value(value: T) {
+        this.set(value);
+    }
+
     update(fn: (current: T) => T) {
         this.set(fn(this.get()));
     }
@@ -215,6 +223,14 @@ export class Computed<T> extends Observable<T> implements Watcher {
         }
 
         return this._get();
+    }
+
+    get value(): T {
+        return this.get();
+    }
+
+    set value(value: T) {
+        console.warn(`Cannot set value of Computed ${this}. Computed values are read-only.`);
     }
 
     override subscribe(fn: Job, weak = false): Unsubscribe {

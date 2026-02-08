@@ -15,6 +15,19 @@ test('Basic computed with single immediate signal dependency', () => {
     expect(computed.get()).toBe(2);
 });
 
+test('basic computed using value setter/getter', () => {
+    const signal = new Signal(0);
+
+    const computed = new Computed(() => {
+        return signal.value + 1;
+    });
+
+    expect(computed.value).toBe(1);
+
+    signal.value += 1;
+    expect(computed.value).toBe(2);
+});
+
 test('Derived computed', () => {
     const signal = new Signal(0);
 

@@ -15,6 +15,19 @@ test('test simple effect', () => {
     expect(val).toBe(2);
 });
 
+test('simple effect with value getter/setter', () => {
+    const signal = new Signal(0);
+
+    let val: number = -1;
+    effect(() => {
+        val = signal.value;
+    });
+    expect(val).toBe(0);
+    
+    signal.value = 2;
+    expect(val).toBe(2);
+});
+
 test('test multiple signals effect', () => {
     const signal1 = new Signal(0);
     const signal2 = new Signal(0);
