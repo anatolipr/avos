@@ -1,6 +1,6 @@
 import type { LitElement } from "lit";
 
-let __DEV__ = !!(import.meta as any)?.env?.DEV; //TODO - add logic to detect debug query param
+const __DEV__ = typeof import.meta !== 'undefined' && !!(import.meta as any).env?.DEV;
 
 if (__DEV__) {
     console.warn(
