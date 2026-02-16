@@ -1,6 +1,6 @@
 import type { LitElement } from "lit";
 
-let __DEV__ = true; //TODO - add logic to detect debug query param
+let __DEV__ = !!(import.meta as any)?.env?.DEV; //TODO - add logic to detect debug query param
 
 type Job = () => void;
 
@@ -133,8 +133,7 @@ export class Signal<T> extends Observable<T> {
 
     set(value: T) {
         if (__DEV__ && Signal.activeConsumer) {
-            throw new Error(
-                `Signal write during reactive evaluation:\n` +
+            console.error(`Signal write during reactive evaluation:\n` +
                 `  writing ${this}\n` +
                 `  while computing ${Signal.activeConsumer}`
             );
