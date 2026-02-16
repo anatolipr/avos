@@ -2,6 +2,12 @@ import type { LitElement } from "lit";
 
 let __DEV__ = !!(import.meta as any)?.env?.DEV; //TODO - add logic to detect debug query param
 
+if (__DEV__) {
+    console.warn(
+        'avosignals is in development mode.'
+    );
+}
+
 type Job = () => void;
 
 type Unsubscribe = () => void;
