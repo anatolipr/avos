@@ -1,4 +1,4 @@
-import type { LitElement, ReactiveController } from "lit";
+import type { LitElement, PropertyValues, ReactiveController } from "lit";
 
 const __DEV__ = typeof import.meta !== 'undefined' && !!(import.meta as any).env?.DEV;
 
@@ -274,11 +274,33 @@ export class SignalWatcher implements Watcher, ReactiveController {
     #host: LitElement;
     #deps = new Map<Observable<unknown>, Unsubscribe>();
     _debugParent: Watcher | undefined;
-    #active = false;
 
     constructor(host: LitElement) {
         this.#host = host;
         host.addController(this);
+
+        // Bypass TS protection for metaprogramming
+        const target = host as LitElement & { 
+            update(cchangedProperties: PropertyValues): void 
+        };
+        const originalUpdate = target.update;
+
+        const watcher = this;
+
+        // override the update method for safe tracking in case of exception in render()
+        target.update = function(changedProperties: any) {
+            
+            Signal.push(watcher); 
+            
+            try {
+                // Execute Lit's actual update, ensuring 'this' remains the LitElement
+                originalUpdate.call(this, changedProperties); 
+            } finally {
+                // Guaranteed to pop, even if render() throws an error
+                Signal.pop(); 
+            }
+        };
+        
     }
 
     track(signal: Observable<unknown>) {
@@ -298,18 +320,11 @@ export class SignalWatcher implements Watcher, ReactiveController {
     hostUpdate() {
         for (const unsub of this.#deps.values()) unsub();
         this.#deps.clear();
-        Signal.push(this);
-        this.#active = true;
-    }
-
-    hostUpdated() {
-        this.#popIfActive();
     }
 
     hostDisconnected() {
         for (const unsub of this.#deps.values()) unsub();
         this.#deps.clear();
-        this.#popIfActive();
     }
 
     toString(): string {
@@ -318,10 +333,4 @@ export class SignalWatcher implements Watcher, ReactiveController {
         return `SignalWatcher(${name})`;
     }
 
-    #popIfActive() {
-        if (this.#active) {
-            Signal.pop();
-            this.#active = false;
-        }
-    }
 }
