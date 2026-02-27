@@ -1,7 +1,7 @@
 import { Signal } from "./avosignals";
 
 //TODO - function which returns JSON with possibly nested Signals resolved
-export function singalToJSON(value: Signal<any>): { [key: string]: any } {
+export function signalToJSON(value: Signal<any>): { [key: string]: any } {
     
     const result: { [key: string]: any } = {};
 
@@ -10,7 +10,7 @@ export function singalToJSON(value: Signal<any>): { [key: string]: any } {
     if (Array.isArray(val)) {
         return val.map(item => {
             if (item instanceof Signal) {
-                return singalToJSON(item);
+                return signalToJSON(item);
             } else {
                 return item;
             }
@@ -19,7 +19,7 @@ export function singalToJSON(value: Signal<any>): { [key: string]: any } {
         for (const key in val) {
             const item = val[key];
             if (item instanceof Signal) {
-                result[key] = singalToJSON(item);
+                result[key] = signalToJSON(item);
             } else {
                 result[key] = item;
             }

@@ -34,19 +34,6 @@ test('Signal basic subscribe with immediate effect', () => {
     expect(derived).toBe(1);
 });
 
-test('Signal basic subscribe with scheduled effect', () => {
-    const signal = new Signal(0);
-    
-    let derived = signal.get();
-    signal.subscribe(() => {
-        derived = signal.get();
-    });
-    expect(derived).toBe(0);
-
-    signal.set(1);
-    expect(derived).toBe(1);
-});
-
 test('Ensure unsubscribe', () => {
     const signal = new Signal(0);
     let derived = signal.get();

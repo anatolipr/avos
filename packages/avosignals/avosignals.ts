@@ -1,4 +1,4 @@
-import type { LitElement } from "lit";
+import type { LitElement, ReactiveController } from "lit";
 
 const __DEV__ = typeof import.meta !== 'undefined' && !!(import.meta as any).env?.DEV;
 
@@ -139,7 +139,7 @@ export class Signal<T> extends Observable<T> {
 
     set(value: T) {
         if (__DEV__ && Signal.activeConsumer) {
-            console.error(`Signal write during reactive evaluation:\n` +
+            throw new Error(`Signal write during reactive evaluation:\n` +
                 `  writing ${this}\n` +
                 `  while computing ${Signal.activeConsumer}`
             );
@@ -235,7 +235,7 @@ export class Computed<T> extends Observable<T> implements Watcher {
     }
 
     set value(value: T) {
-        console.warn(`Cannot set value of Computed ${this}. Computed values are read-only.`);
+        throw new Error(`Cannot set value of Computed ${this}. Computed values are read-only.`);
     }
 
     override subscribe(fn: Job, weak = false): Unsubscribe {
@@ -270,7 +270,7 @@ export function effect(fn: () => (void | (() => void)), name?: string) {
 
 // Lit
 
-export class SignalWatcher implements Watcher {
+export class SignalWatcher implements Watcher, ReactiveController {
     #host: LitElement;
     #deps = new Map<Observable<unknown>, Unsubscribe>();
     _debugParent: Watcher | undefined;
@@ -286,9 +286,13 @@ export class SignalWatcher implements Watcher {
         
         this.#deps.set(
             signal,
-            signal.subscribe(() => this.#host.requestUpdate())
+            signal.subscribe(this.#requestUpdate, true)
         );
         
+    }
+
+    #requestUpdate = () => {
+        this.#host.requestUpdate();
     }
 
     hostUpdate() {
@@ -299,16 +303,22 @@ export class SignalWatcher implements Watcher {
     }
 
     hostUpdated() {
-        if (this.#active) {
-            Signal.pop();
-            this.#active = false;
-        }
+        this.#popIfActive();
     }
 
     hostDisconnected() {
         for (const unsub of this.#deps.values()) unsub();
         this.#deps.clear();
-        // optional safety if the component disconnects mid-render
+        this.#popIfActive();
+    }
+
+    toString(): string {
+        const host = this.#host as any;
+        const name = host?.localName ?? host?.tagName ?? host?.constructor?.name ?? 'unknown';
+        return `SignalWatcher(${name})`;
+    }
+
+    #popIfActive() {
         if (this.#active) {
             Signal.pop();
             this.#active = false;
