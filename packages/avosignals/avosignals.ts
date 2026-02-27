@@ -281,14 +281,14 @@ export class SignalWatcher implements Watcher, ReactiveController {
 
         // Bypass TS protection for metaprogramming
         const target = host as LitElement & { 
-            update(cchangedProperties: PropertyValues): void 
+            update(changedProperties: PropertyValues): void
         };
         const originalUpdate = target.update;
 
         const watcher = this;
 
         // override the update method for safe tracking in case of exception in render()
-        target.update = function(changedProperties: any) {
+        target.update = function(changedProperties: PropertyValues) { 
             
             Signal.push(watcher); 
             
