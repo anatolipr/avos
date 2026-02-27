@@ -8,6 +8,34 @@ if (__DEV__) {
     );
 }
 
+let batchDepth = 0;
+const effectQueue = new Set<() => void>();
+
+/**
+ * Groups multiple signal updates into a single transaction.
+ * Effects will only run once the outermost batch completes.
+ */
+export function batch(fn: () => void) {
+    batchDepth++;
+    try {
+        fn();
+    } finally {
+        batchDepth--;
+        if (batchDepth === 0) flush();
+    }
+}
+
+function flush() {
+    // Clone and clear the queue. 
+    // This allows effects themselves to safely trigger new signals!
+    const jobs = new Set(effectQueue);
+    effectQueue.clear();
+    
+    for (const job of jobs) {
+        job();
+    }
+}
+
 type Job = () => void;
 
 type Unsubscribe = () => void;
@@ -144,7 +172,10 @@ export class Signal<T> extends Observable<T> {
                 `  while computing ${Signal.activeConsumer}`
             );
         }
-        this._set(value);
+
+        batch(() => {
+            this._set(value);
+        });
     }
 
     get value(): T {
@@ -255,14 +286,23 @@ export function effect(fn: () => (void | (() => void)), name?: string) {
         cleanup = fn();
     }, name, { weak: false });
 
+    // Create a stable reference to the execution function
+    const runEffect = () => computer.get();
+
     const unsub = computer.subscribe(() => {
-        computer.get();
+        // If an update is happening, queue the effect.
+        if (batchDepth > 0) {
+            effectQueue.add(runEffect);
+        } else {
+            runEffect();
+        }
     });
 
-    computer.get();
+    computer.get(); // Initial run
     
     return () => {
         unsub();
+        effectQueue.delete(runEffect); // Prevent ghost execution if disposed mid-batch
         computer.dispose();
         if (typeof cleanup === 'function') cleanup();
     };
