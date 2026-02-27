@@ -43,6 +43,22 @@ count.set(1);
 count.update(c => c + 1); // 2
 ```
 
+#### The `value` property
+Similar having the `update()` for convenience `avosignals` also has a concise `value` property for reading or writing the current signal value. Accessing `value` inside a reactive context tracks the dependency just like `get()`:
+
+```Typescript
+const count = new Signal(0);
+
+console.log(count.value); // 0
+console.log(count.get()); // 0
+
+count.value += 1; //count.set(count.get() + 1);
+
+console.log(count.value); // 1
+console.log(count.get()); // 1
+```
+
+
 ## 2. Computed
 
 Computed values are derived signals. They depend on other signals and re-evaluate only when their dependencies change. They are lazy—they only recalculate when read.

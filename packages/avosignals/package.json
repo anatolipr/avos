@@ -1,6 +1,6 @@
 {
   "name": "avosignals",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "A lightweight signaling library for web components and modern web applications with Lit integration.",
   "keywords": [
     "signals",
